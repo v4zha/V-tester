@@ -1,0 +1,56 @@
+use crate::ast::*;
+
+grammar;
+
+pub Instructions:Box<Instruction> = {
+    // "info{" <i:Info> "}program{" <p:Program> "}tests{" <t:Tests> "}" =>Box::new(Instruction::new(i,p,t)),
+    r"\s*info\s*\{\s*" <i:Info> r"\s*\}\s*program\s*\{\s*" <p:Program> r"\s*\}\s*tests\s*\{\s*" <t:Tests> r"\s*\}\s*" =>Box::new(Instruction::new(i,p,t)),
+}
+
+ListSep<T>:Vec<T> = {
+   <mut ele:(<T> r"\s*,\s*")*> <end:T?> => match end{
+      None=>ele,
+      Some(end)=>{
+         ele.push(end);
+         ele
+      }
+   }
+}
+
+Info:Box<Info> = {
+    <n:Name> r"\s*;\s*" <d:Desc> r"\s*;\s*" =>Box::new(Info::new(n,d)),
+}
+
+Program:Box<Program> = {
+    <lang:Lang> r"\s*;\s*" <run_env:RunEnv> r"\s*;\s*" =>Box::new(Program::new(lang,run_env)),
+}
+
+Tests:Box<Tests> = {
+    <tests:TestVec> => Box::new(Tests::new(tests))
+}
+
+TestVec:Vec<Test> = ListSep<Test>;
+
+Name:String={
+    r"\s*name\s*=\s*" <t:Term> =>t,
+}
+Desc:String={
+    r"\s*desc\s*=\s*" <t:Term> =>t,
+}
+Lang:String={
+    r"\s*lang\s*=\s*" <t:Term> =>t,
+}
+RunEnv:String={
+    r"\s*run_env\s*=\s*" <t:Term> =>t,
+}
+
+Term:String=r"\w+"=><>.to_string();
+
+Test:Test = {
+   r"\s*\(\s*"<test_name:Term> r"\s*\)\s*\{\s*input\s*\[\s*" <inp:TestInp> r"\s*\]\s*output\s*\[\s*" <out:TestOut> r"\s*\]\s*\}\s*" =>{
+      Test::new(test_name,inp,out)
+   }
+}
+TestInp:Vec<String> = ListSep<Term>;
+
+TestOut:Vec<String> = ListSep<Term>;
