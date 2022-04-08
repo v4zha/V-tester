@@ -1,0 +1,18 @@
+info {
+    name=linear search ; 
+    desc=Find the element using Linear Search; 
+} 
+program {
+    lang = c ; 
+    run_env = gcc;
+}
+tests {
+    (test_1){
+        input[5,1,2,3,4,5,2]
+        output[Yes]
+    },
+    (test_2){
+        input[1,2,3]
+        output[No.Was not found]
+    }
+}

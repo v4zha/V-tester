@@ -8,7 +8,7 @@ pub Instructions:Box<Instruction> = {
 }
 
 ListSep<T>:Vec<T> = {
-   <mut ele:(<T> r"\s*,\s*")*> <end:T?> => match end{
+   <mut ele:(<T> ",")*> <end:T?> => match end{
       None=>ele,
       Some(end)=>{
          ele.push(end);
@@ -44,7 +44,7 @@ RunEnv:String={
     r"\s*run_env\s*=\s*" <t:Term> =>t,
 }
 
-Term:String=r"\w+"=><>.to_string();
+Term:String=r"[\w\s.?&]+"=><>.to_string();
 
 Test:Test = {
    r"\s*\(\s*"<test_name:Term> r"\s*\)\s*\{\s*input\s*\[\s*" <inp:TestInp> r"\s*\]\s*output\s*\[\s*" <out:TestOut> r"\s*\]\s*\}\s*" =>{
