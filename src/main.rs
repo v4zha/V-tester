@@ -13,7 +13,9 @@ fn main(){
          run_env = gcc;
         }
     tests{
-        (vtest)
+        (vtest){
+            input[no]output[pls]
+        }
         }"
     .into();
     let res:Box<Instruction> =vscript::InstructionsParser::new().parse(input).unwrap();
