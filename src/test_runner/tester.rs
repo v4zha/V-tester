@@ -1,16 +1,16 @@
-use crate::vscript_dsl::{ast, vscript};
-use std::{fs::File, io::Read, iter::Inspect};
+use crate::vscript_dsl::{vscript,ast};
+use std::{fs::File, io::Read};
 
 pub struct TestBuilder<'a> {
-    path: &'a str,
+    tester_path: &'a str,
     inp_file: &'a str,
     out_file: &'a str,
     test_path: &'a str,
-    instructions: Box<ast::Instruction>,
+    instructions: Option<Box<ast::Instruction>>,
     compiler_opts: Vec<String>,
     run_opts: Option<String>,
 }
-pub struct Tester{
+pub struct Tester {
     instructions: Box<ast::Instruction>,
     compiler_opts: Vec<String>,
     run_opts: Option<String>,
@@ -18,7 +18,7 @@ pub struct Tester{
 
 impl<'a> TestBuilder<'a> {
     pub fn path(mut self, path: &'a str) -> Self {
-        self.path = path;
+        self.tester_path = path;
         self
     }
     pub fn input(mut self, input: &'a str) -> Self {
@@ -35,13 +35,13 @@ impl<'a> TestBuilder<'a> {
     }
     pub fn parse_file(mut self) -> Self {
         let mut input = String::new();
-        File::open(self.path)
+        File::open(self.tester_path)
             .unwrap()
             .read_to_string(&mut input)
             .unwrap();
         let res = vscript::InstructionsParser::new().parse(&input).unwrap();
         let res = res.unwrap();
-        self.instructions = res;
+        self.instructions = Some(res);
         self
     }
     pub fn compiler_opts(mut self, env: &ast::RunEnv) -> Self {
@@ -52,13 +52,13 @@ impl<'a> TestBuilder<'a> {
                 "gcc".into(),
                 self.inp_file.into(),
                 "-O".into(),
-                format!("{}{}", self.test_path, self.out_file),
+                format!("{}/{}", self.test_path, self.out_file),
             ],
             "clang" => vec![
                 "clang".into(),
                 self.inp_file.into(),
                 "-o".into(),
-                format!("{}{}", self.test_path, self.out_file),
+                format!("{}/{}", self.test_path, self.out_file),
             ],
             "python" => vec!["python3".into(), self.inp_file.into()],
             _ => Vec::new(),
@@ -68,14 +68,34 @@ impl<'a> TestBuilder<'a> {
     }
     pub fn run_opts(mut self, env: &str) -> Self {
         let opts = match env {
-            "gcc" | "clang" => Some(format!("{}{}", self.test_path, self.out_file)),
+            "gcc" | "clang" => Some(format!(
+                "{}{}",
+                self.test_path,
+                self.out_file,
+            )),
             _ => None,
         };
         self.run_opts = opts;
         self
     }
-    pub fn build(self)->Tester{
-        Tester { instructions:self.instructions, compiler_opts:self.compiler_opts, run_opts:self.run_opts }
+    pub fn build(self) -> Tester {
+        Tester {
+            instructions: self.instructions.unwrap(),
+            compiler_opts: self.compiler_opts,
+            run_opts: self.run_opts,
+        }
     }
 }
-
+impl<'a> Default for TestBuilder<'a> {
+    fn default() -> Self {
+        Self {
+            tester_path:"./tester.vscript",
+            instructions:None,
+            inp_file:"test.c",
+            out_file:"test",
+            test_path:"tests",
+            compiler_opts:Vec::new(),
+            run_opts:None
+        }
+    }
+}
