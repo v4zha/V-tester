@@ -1,9 +1,11 @@
 use crate::vscript_dsl::ast::*;
+use crate::vscript_dsl::dsl_errors::ParseError;
 
 grammar;
 
-pub Instructions:Box<Instruction> = {
-    r"\s*info\s*\{\s*" <i:Info> r"\s*\}\s*program\s*\{\s*" <p:Program> r"\s*\}\s*tests\s*\{\s*" <t:Tests> r"\s*\}\s*" =>Box::new(Instruction::new(i,p,t)),
+pub Instructions:Result<Box<Instruction>,ParseError> = {
+    r"\s*info\s*\{\s*" <i:Info> r"\s*\}\s*program\s*\{\s*" <p:Program> r"\s*\}\s*tests\s*\{\s*" <t:Tests> r"\s*\}\s*" =>Ok(Box::new(Instruction::new(i,p,t))),
+    ! => Err(ParseError::SyntaxError),
 }
 
 ListSep<T>:Vec<T> = {
@@ -17,38 +19,51 @@ ListSep<T>:Vec<T> = {
 }
 
 Info:Box<Info> = {
-    <n:Name> r"\s*;\s*" <d:Desc> r"\s*;\s*" =>Box::new(Info::new(n,d)),
-}
+    <n:Name> r"\s*;\s*" <d:Desc> r"\s*;\s*" =>{
+                                        let n=n.unwrap();
+                                        let d=d.unwrap();
+                                         Box::new(Info::new(n,d))
+                                        },
+}                                        
 
 Program:Box<Program> = {
-    <lang:Lang> r"\s*;\s*" <run_env:RunEnv> r"\s*;\s*" =>Box::new(Program::new(&lang,&run_env)),
+    <lang:Lang> r"\s*;\s*" <run_env:RunEnv> r"\s*;\s*" =>{
+                                                    let lang=lang.unwrap();
+                                                    let run_env=run_env.unwrap();
+                                                    Box::new(Program::new(&lang,&run_env))
+                                                },
 }
 
 Tests:Box<Tests> = {
-    <tests:TestVec> => Box::new(Tests::new(tests))
+    <tests:TestVec> => Box::new(Tests::new(tests)),
 }
 
-TestVec:Vec<Test> = ListSep<Test>;
+TestVec:Vec<Result<Test,ParseError>> = ListSep<Test>;
 
-Name:String={
-    r"\s*name\s*=\s*" <t:Term> =>t,
+Name:Result<String,ParseError> ={
+    r"\s*name\s*=\s*" <t:Term> => Ok(t),
+    ! =>  Err(ParseError::FieldError("name".into()))  ,
 }
-Desc:String={
-    r"\s*desc\s*=\s*" <t:Term> =>t,
+Desc:Result<String,ParseError> ={
+    r"\s*desc\s*=\s*" <t:Term> => Ok(t),
+    ! =>   Err(ParseError::FieldError("desc".into())) ,
 }
-Lang:String={
-    r"\s*lang\s*=\s*" <t:Term> =>t,
+Lang:Result<String,ParseError> ={
+    r"\s*lang\s*=\s*" <t:Term> => Ok(t),
+    ! =>   Err(ParseError::FieldError("lang".into())) ,
 }
-RunEnv:String={
-    r"\s*run_env\s*=\s*" <t:Term> =>t,
+RunEnv:Result<String,ParseError> ={
+    r"\s*run_env\s*=\s*" <t:Term> => Ok(t),
+    ! =>  Err(ParseError::FieldError("run_env".into())) ,
 }
 
-Term:String=r"[\w\s.?&]+"=><>.to_string();
+Term:String=r"[\w\s.?&]+"=> <>.to_string();
 
-Test:Test = {
+Test:Result<Test ,ParseError> = {
    r"\s*\(\s*"<test_name:Term> r"\s*\)\s*\{\s*input\s*\[\s*" <inp:TestInp> r"\s*\]\s*output\s*\[\s*" <out:TestOut> r"\s*\]\s*\}\s*" =>{
-      Test::new(test_name,inp,out)
-   }
+      Ok(Test::new(test_name,inp,out))
+   },
+   ! => Err(ParseError::FieldError("Invalid Test".into())),
 }
 TestInp:Vec<String> = ListSep<Term>;
 

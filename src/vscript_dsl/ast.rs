@@ -1,3 +1,5 @@
+use crate::vscript_dsl::dsl_errors::{InstructionError,ParseError};
+use std::vec::Vec;
 /*
     NOTE: newline=';'
     info{
@@ -33,7 +35,7 @@ pub struct Info {
 #[derive(Debug)]
 pub struct Program {
     language: PrgLang,
-    run_env: RunEnv,
+    pub run_env: RunEnv,
 }
 #[derive(Debug)]
 pub struct Tests {
@@ -96,8 +98,14 @@ impl Test {
 }
 
 impl Tests {
-    pub fn new(test: Vec<Test>) -> Self {
-        Self { test }
+    pub fn new(test: Vec<Result<Test,ParseError>>) -> Self {
+        let mut res:Vec<Test> = Vec::new();
+        for t in test{
+            if let Ok(val)=t{
+                res.push(val);
+            }
+        }
+        Self{test:res}
     }
 }
 #[derive(Debug)]
@@ -106,21 +114,17 @@ enum PrgLang {
     Python,
 }
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-enum Compiler {
+pub enum Compiler {
     Gcc,
     Clang,
 }
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-enum Interpreter {
+pub enum Interpreter {
     Python,
 }
-#[derive(Debug)]
-enum InstructionError {
-    RunEnvError,
-    LanguageError,
-}
+
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-enum RunEnv {
+pub enum RunEnv {
     Compiler(Compiler),
     Interpreter(Interpreter),
 }
@@ -135,6 +139,15 @@ impl RunEnv {
             }
             PrgLang::Python if self == RunEnv::Interpreter(Interpreter::Python) => Ok(()),
             _ => Err(InstructionError::RunEnvError),
+        }
+    }
+}
+impl Into<String> for &RunEnv{
+    fn into(self)->String{
+        match self{
+            RunEnv::Compiler(Compiler::Clang)=>"clang".into(),
+            RunEnv::Compiler(Compiler::Gcc)=>"gcc".into(),
+            RunEnv::Interpreter(Interpreter::Python)=>"python".into(),
         }
     }
 }
