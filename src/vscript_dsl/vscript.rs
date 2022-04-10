@@ -1,5 +1,5 @@
 // auto-generated: "lalrpop 0.19.7"
-// sha3: fc28bf1c7178dad1de56071f9411a8cda2140f1596313931dc7ba33405490
+// sha3: 4c4c8a3170bbdf660a71a425829a3255cc9f3f9ffcb112828a2783ecdd3e
 use crate::vscript_dsl::ast::*;
 use crate::vscript_dsl::dsl_errors::ParseError;
 #[allow(unused_extern_crates)]

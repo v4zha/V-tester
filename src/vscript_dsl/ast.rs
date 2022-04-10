@@ -151,3 +151,39 @@ impl Into<String> for &RunEnv {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::vscript_dsl::{dsl_errors::ParseError, vscript};
+    use std::{fs::File, io::Read};
+
+    use super::Instruction;
+    //file parse fn
+    fn parse(path: &str) -> Result<Box<Instruction>, ParseError> {
+        let mut input = String::new();
+        File::open(path)
+            .unwrap()
+            .read_to_string(&mut input)
+            .unwrap();
+        vscript::InstructionsParser::new().parse(&input).unwrap()
+    }
+
+    #[test]
+    //check valid parse file
+    fn valid_check() {
+        let path = "v_test/tester.vscript";
+        let res = parse(path);
+        if let Err(err) = res {
+            panic!("Erro : {:?}", err);
+        }
+    }
+    #[test]
+    //check invalid parse file
+    fn invalid_check() {
+        let path = "v_test/invalid/inv1.vscript";
+        let res = parse(path);
+        if let Ok(_) = res {
+            panic!("Invalid file Parsed : )")
+        }
+    }
+}

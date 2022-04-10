@@ -4,8 +4,7 @@ pub enum InstructionError {
     LanguageError,
 }
 #[derive(Debug)]
-pub enum ParseError{
+pub enum ParseError {
     SyntaxError,
-    InvalidChar,
     FieldError(String),
 }

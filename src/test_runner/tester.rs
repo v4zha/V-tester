@@ -1,4 +1,4 @@
-use crate::vscript_dsl::{vscript,ast};
+use crate::vscript_dsl::{ast, vscript};
 use std::{fs::File, io::Read};
 
 pub struct TestBuilder<'a> {
@@ -68,20 +68,16 @@ impl<'a> TestBuilder<'a> {
     }
     pub fn run_opts(&self, env: &str) -> Option<String> {
         let opts = match env {
-            "gcc" | "clang" => Some(format!(
-                "{}{}",
-                self.test_path,
-                self.out_file,
-            )),
+            "gcc" | "clang" => Some(format!("{}/{}", self.test_path, self.out_file,)),
             _ => None,
         };
         opts
     }
-    pub fn opts(mut self)->Self{
-        let env=&self.instructions.as_ref().unwrap().program.run_env;
-        self.compiler_opts=self.compiler_opts(env);
-        let run_env=&self.compiler_opts.iter().nth(0).unwrap();
-        self.run_opts=self.run_opts(run_env);
+    pub fn opts(mut self) -> Self {
+        let env = &self.instructions.as_ref().unwrap().program.run_env;
+        self.compiler_opts = self.compiler_opts(env);
+        let run_env = &self.compiler_opts.iter().nth(0).unwrap();
+        self.run_opts = self.run_opts(run_env);
         self
     }
     pub fn build(self) -> Tester {
@@ -95,13 +91,45 @@ impl<'a> TestBuilder<'a> {
 impl<'a> Default for TestBuilder<'a> {
     fn default() -> Self {
         Self {
-            tester_path:"./tester.vscript",
-            instructions:None,
-            inp_file:"test.c",
-            out_file:"test",
-            test_path:"tests",
-            compiler_opts:Vec::new(),
-            run_opts:None
+            tester_path: "v_test/tester.vscript",
+            instructions: None,
+            inp_file: "test.c",
+            out_file: "test",
+            test_path: "src/v_test",
+            compiler_opts: Vec::new(),
+            run_opts: None,
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::test_runner::tester::{TestBuilder, Tester};
+    //run_opts check with test_path : )
+    #[test]
+    fn run_check() {
+        let tester = TestBuilder::default()
+            .test_path("src/tests")
+            .parse_file()
+            .opts()
+            .build();
+        assert!(tester.run_opts == Some("src/tests/test".into()))
+    }
+    //compiler_opts check with input file and output file : )
+    #[test]
+    fn compiler_check() {
+        let tester = TestBuilder::default()
+            .input("vazha.c")
+            .output("vazha")
+            .parse_file()
+            .opts()
+            .build();
+        let opts: Vec<String> = vec![
+            "gcc".into(),
+            "src/v_test/vazha.c".into(),
+            "-O".into(),
+            "src/v_test/vazha".into(),
+        ];
+        assert!(tester.compiler_opts == opts)
     }
 }

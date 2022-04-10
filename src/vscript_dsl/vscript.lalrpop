@@ -59,7 +59,7 @@ RunEnv:Result<String,ParseError> ={
 
 Term:String=r"[\w\s.?&]+"=> <>.to_string();
 
-Test:Result<Test ,ParseError> = {
+Test:Result<Test,ParseError> = {
    r"\s*\(\s*"<test_name:Term> r"\s*\)\s*\{\s*input\s*\[\s*" <inp:TestInp> r"\s*\]\s*output\s*\[\s*" <out:TestOut> r"\s*\]\s*\}\s*" =>{
       Ok(Test::new(test_name,inp,out))
    },
