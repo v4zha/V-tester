@@ -1,9 +1,8 @@
 info {
-    name=linear search ;  
+    na=linear search ;  
 } 
 program {
-    lang = c ; 
-    run_env = gcc;
+    rn_env = gcc;
 }
 tests {
     (test_1){
