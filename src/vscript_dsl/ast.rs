@@ -1,4 +1,4 @@
-use crate::vscript_dsl::dsl_errors::{InstructionError,ParseError};
+use crate::vscript_dsl::dsl_errors::{InstructionError, ParseError};
 use std::vec::Vec;
 /*
     NOTE: newline=';'
@@ -24,7 +24,7 @@ use std::vec::Vec;
 #[derive(Debug)]
 pub struct Instruction {
     info: Box<Info>,
-    program: Box<Program>,
+    pub program: Box<Program>,
     tests: Box<Tests>,
 }
 #[derive(Debug)]
@@ -49,7 +49,7 @@ impl Info {
 }
 impl Program {
     pub fn new(language: &str, run_env: &str) -> Self {
-        let language:String=language.split_whitespace().collect();
+        let language: String = language.split_whitespace().collect();
         let lang: Result<PrgLang, InstructionError> = match language.as_str() {
             "c" => Ok(PrgLang::C),
             "python" => Ok(PrgLang::Python),
@@ -98,14 +98,14 @@ impl Test {
 }
 
 impl Tests {
-    pub fn new(test: Vec<Result<Test,ParseError>>) -> Self {
-        let mut res:Vec<Test> = Vec::new();
-        for t in test{
-            if let Ok(val)=t{
+    pub fn new(test: Vec<Result<Test, ParseError>>) -> Self {
+        let mut res: Vec<Test> = Vec::new();
+        for t in test {
+            if let Ok(val) = t {
                 res.push(val);
             }
         }
-        Self{test:res}
+        Self { test: res }
     }
 }
 #[derive(Debug)]
@@ -142,12 +142,12 @@ impl RunEnv {
         }
     }
 }
-impl Into<String> for &RunEnv{
-    fn into(self)->String{
-        match self{
-            RunEnv::Compiler(Compiler::Clang)=>"clang".into(),
-            RunEnv::Compiler(Compiler::Gcc)=>"gcc".into(),
-            RunEnv::Interpreter(Interpreter::Python)=>"python".into(),
+impl Into<String> for &RunEnv {
+    fn into(self) -> String {
+        match self {
+            RunEnv::Compiler(Compiler::Clang) => "clang".into(),
+            RunEnv::Compiler(Compiler::Gcc) => "gcc".into(),
+            RunEnv::Interpreter(Interpreter::Python) => "python".into(),
         }
     }
 }

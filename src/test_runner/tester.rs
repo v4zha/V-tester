@@ -10,6 +10,7 @@ pub struct TestBuilder<'a> {
     compiler_opts: Vec<String>,
     run_opts: Option<String>,
 }
+#[derive(Debug)]
 pub struct Tester {
     instructions: Box<ast::Instruction>,
     compiler_opts: Vec<String>,
@@ -44,29 +45,28 @@ impl<'a> TestBuilder<'a> {
         self.instructions = Some(res);
         self
     }
-    pub fn compiler_opts(mut self, env: &ast::RunEnv) -> Self {
+    pub fn compiler_opts(&self, env: &ast::RunEnv) -> Vec<String> {
         let env: String = env.into();
         let env = &env[..];
         let opts = match env {
             "gcc" => vec![
                 "gcc".into(),
-                self.inp_file.into(),
+                format!("{}/{}", self.test_path, self.inp_file),
                 "-O".into(),
                 format!("{}/{}", self.test_path, self.out_file),
             ],
             "clang" => vec![
                 "clang".into(),
-                self.inp_file.into(),
+                format!("{}/{}", self.test_path, self.inp_file),
                 "-o".into(),
                 format!("{}/{}", self.test_path, self.out_file),
             ],
             "python" => vec!["python3".into(), self.inp_file.into()],
             _ => Vec::new(),
         };
-        self.compiler_opts = opts;
-        self
+        opts
     }
-    pub fn run_opts(mut self, env: &str) -> Self {
+    pub fn run_opts(&self, env: &str) -> Option<String> {
         let opts = match env {
             "gcc" | "clang" => Some(format!(
                 "{}{}",
@@ -75,7 +75,13 @@ impl<'a> TestBuilder<'a> {
             )),
             _ => None,
         };
-        self.run_opts = opts;
+        opts
+    }
+    pub fn opts(mut self)->Self{
+        let env=&self.instructions.as_ref().unwrap().program.run_env;
+        self.compiler_opts=self.compiler_opts(env);
+        let run_env=&self.compiler_opts.iter().nth(0).unwrap();
+        self.run_opts=self.run_opts(run_env);
         self
     }
     pub fn build(self) -> Tester {
