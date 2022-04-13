@@ -99,12 +99,7 @@ impl Test {
 
 impl Tests {
     pub fn new(test: Vec<Result<Test, ParseError>>) -> Self {
-        let mut res: Vec<Test> = Vec::new();
-        for t in test {
-            if let Ok(val) = t {
-                res.push(val);
-            }
-        }
+        let res:Vec<Test> = test.into_iter().filter(|r|r.is_ok()).map(|r|r.unwrap()).collect();
         Self { test: res }
     }
 }
