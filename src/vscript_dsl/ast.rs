@@ -150,19 +150,24 @@ impl Into<String> for &RunEnv {
 #[cfg(test)]
 mod test {
     use crate::vscript_dsl::{dsl_errors::ParseError, vscript};
-    use std::{fs::File, io::Read};
-
+    use std::{fs::File, io::Read,error::Error};
     use super::Instruction;
     //file parse fn
-    fn parse(path: &str) -> Result<Box<Instruction>, ParseError> {
-        let mut input = String::new();
-        File::open(path)
-            .unwrap()
-            .read_to_string(&mut input)
-            .unwrap();
-        vscript::InstructionsParser::new().parse(&input).unwrap()
+    fn parse(path:&str)->Result<(), Box<dyn Error>>{
+            let mut input = String::new();
+        File::open(path)?
+            .read_to_string(&mut input)?;
+        let res = vscript::InstructionsParser::new().parse(&input);
+        match res{
+            Ok(res)=>{
+                let res=res?;
+                Ok(())
+            }
+            Err(_)=>{
+                return Err(Box::new(ParseError::SyntaxError));
+            }
+        }
     }
-
     #[test]
     //check valid parse file
     fn valid_check() {

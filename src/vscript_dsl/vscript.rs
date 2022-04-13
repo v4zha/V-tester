@@ -1,7 +1,8 @@
 // auto-generated: "lalrpop 0.19.7"
-// sha3: 4c4c8a3170bbdf660a71a425829a3255cc9f3f9ffcb112828a2783ecdd3e
+// sha3: 2f9acd7bde446fa61db75fcf11f2925c1eaf3253e414a9badf5ed98e47172
 use crate::vscript_dsl::ast::*;
 use crate::vscript_dsl::dsl_errors::ParseError;
+use std::error::Error;
 #[allow(unused_extern_crates)]
 extern crate lalrpop_util as __lalrpop_util;
 #[allow(unused_imports)]
@@ -15,6 +16,7 @@ mod __parse__Instructions {
 
     use crate::vscript_dsl::ast::*;
     use crate::vscript_dsl::dsl_errors::ParseError;
+    use std::error::Error;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -32,11 +34,11 @@ mod __parse__Instructions {
         Variant4(Result<Test, ParseError>),
         Variant5(alloc::vec::Vec<Result<Test, ParseError>>),
         Variant6(Result<String, ParseError>),
-        Variant7(Box<Info>),
-        Variant8(Result<Box<Instruction>, ParseError>),
+        Variant7(Result<Box<Info>, Box<dyn Error>>),
+        Variant8(Result<Box<Instruction>, Box<dyn Error>>),
         Variant9(Vec<String>),
         Variant10(Vec<Result<Test, ParseError>>),
-        Variant11(Box<Program>),
+        Variant11(Result<Box<Program>, Box<dyn Error>>),
         Variant12(core::option::Option<String>),
         Variant13(core::option::Option<Result<Test, ParseError>>),
         Variant14(Box<Tests>),
@@ -337,7 +339,7 @@ mod __parse__Instructions {
         type Token = Token<'input>;
         type TokenIndex = usize;
         type Symbol = __Symbol<'input>;
-        type Success = Result<Box<Instruction>, ParseError>;
+        type Success = Result<Box<Instruction>, Box<dyn Error>>;
         type StateIndex = i8;
         type Action = i8;
         type ReduceIndex = i8;
@@ -740,7 +742,7 @@ mod __parse__Instructions {
         >(
             &self,
             input: &'input str,
-        ) -> Result<Result<Box<Instruction>, ParseError>, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
+        ) -> Result<Result<Box<Instruction>, Box<dyn Error>>, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
         {
             let mut __tokens = self.builder.matcher(input);
             __state_machine::Parser::drive(
@@ -795,7 +797,7 @@ mod __parse__Instructions {
         __states: &mut alloc::vec::Vec<i8>,
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>,
         _: core::marker::PhantomData<(&'input ())>,
-    ) -> Option<Result<Result<Box<Instruction>, ParseError>,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
+    ) -> Option<Result<Result<Box<Instruction>, Box<dyn Error>>,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
     {
         let (__pop_states, __nonterminal) = match __action {
             0 => {
@@ -942,28 +944,6 @@ mod __parse__Instructions {
     fn __symbol_type_mismatch() -> ! {
         panic!("symbol type mismatch")
     }
-    fn __pop_Variant7<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Box<Info>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
-    fn __pop_Variant11<
-      'input,
-    >(
-        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Box<Program>, usize)
-     {
-        match __symbols.pop() {
-            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
-            _ => __symbol_type_mismatch()
-        }
-    }
     fn __pop_Variant14<
       'input,
     >(
@@ -975,14 +955,36 @@ mod __parse__Instructions {
             _ => __symbol_type_mismatch()
         }
     }
+    fn __pop_Variant7<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Result<Box<Info>, Box<dyn Error>>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant7(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
     fn __pop_Variant8<
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Result<Box<Instruction>, ParseError>, usize)
+    ) -> (usize, Result<Box<Instruction>, Box<dyn Error>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
+            _ => __symbol_type_mismatch()
+        }
+    }
+    fn __pop_Variant11<
+      'input,
+    >(
+        __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
+    ) -> (usize, Result<Box<Program>, Box<dyn Error>>, usize)
+     {
+        match __symbols.pop() {
+            Some((__l, __Symbol::Variant11(__v), __r)) => (__l, __v, __r),
             _ => __symbol_type_mismatch()
         }
     }
@@ -1853,6 +1855,7 @@ mod __intern_token {
     #![allow(unused_imports)]
     use crate::vscript_dsl::ast::*;
     use crate::vscript_dsl::dsl_errors::ParseError;
+    use std::error::Error;
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -1888,8 +1891,8 @@ fn __action0<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Result<Box<Instruction>, ParseError>, usize),
-) -> Result<Box<Instruction>, ParseError>
+    (_, __0, _): (usize, Result<Box<Instruction>, Box<dyn Error>>, usize),
+) -> Result<Box<Instruction>, Box<dyn Error>>
 {
     __0
 }
@@ -1900,15 +1903,15 @@ fn __action1<
 >(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
-    (_, i, _): (usize, Box<Info>, usize),
+    (_, i, _): (usize, Result<Box<Info>, Box<dyn Error>>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, p, _): (usize, Box<Program>, usize),
+    (_, p, _): (usize, Result<Box<Program>, Box<dyn Error>>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, t, _): (usize, Box<Tests>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Result<Box<Instruction>, ParseError>
+) -> Result<Box<Instruction>, Box<dyn Error>>
 {
-    Ok(Box::new(Instruction::new(i,p,t)))
+    {let i=i?;let p=p?;Ok(Box::new(Instruction::new(i,p,t)))}
 }
 
 #[allow(unused_variables)]
@@ -1917,9 +1920,9 @@ fn __action2<
 >(
     input: &'input str,
     (_, __0, _): (usize, __lalrpop_util::ErrorRecovery<usize, Token<'input>, &'static str>, usize),
-) -> Result<Box<Instruction>, ParseError>
+) -> Result<Box<Instruction>, Box<dyn Error>>
 {
-    Err(ParseError::SyntaxError)
+    Err(Box::new(ParseError::SyntaxError))
 }
 
 #[allow(unused_variables)]
@@ -1931,12 +1934,12 @@ fn __action3<
     (_, _, _): (usize, &'input str, usize),
     (_, d, _): (usize, Result<String, ParseError>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Box<Info>
+) -> Result<Box<Info>, Box<dyn Error>>
 {
     {
-                                        let n=n.unwrap();
-                                        let d=d.unwrap();
-                                         Box::new(Info::new(n,d))
+                                        let n=n?;
+                                        let d=d?;
+                                         Ok(Box::new(Info::new(n,d)))
                                         }
 }
 
@@ -1949,12 +1952,12 @@ fn __action4<
     (_, _, _): (usize, &'input str, usize),
     (_, run_env, _): (usize, Result<String, ParseError>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Box<Program>
+) -> Result<Box<Program>, Box<dyn Error>>
 {
     {
-                                                    let lang=lang.unwrap();
-                                                    let run_env=run_env.unwrap();
-                                                    Box::new(Program::new(&lang,&run_env))
+                                                    let lang=lang?;
+                                                    let run_env=run_env?;
+                                                    Ok(Box::new(Program::new(&lang,&run_env)))
                                                 }
 }
 
