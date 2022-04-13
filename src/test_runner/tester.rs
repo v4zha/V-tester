@@ -1,6 +1,7 @@
 use crate::vscript_dsl::{ast, vscript, dsl_errors::{ParseError, InstructionError}};
-use std::{fs::File, io::Read,error::Error};
-
+use std::{fs::File, io::Read,error::Error, fmt::format, process::Output};
+use std::process::{Command,Stdio};
+use std::io::Write;
 pub struct TestBuilder<'a> {
     tester_path: &'a str,
     inp_file: &'a str,
@@ -12,7 +13,7 @@ pub struct TestBuilder<'a> {
 }
 #[derive(Debug)]
 pub struct Tester {
-    instructions: Box<ast::Instruction>,
+    pub instructions: Box<ast::Instruction>,
     compiler_opts: Vec<String>,
     run_opts: Option<String>,
 }
@@ -57,7 +58,7 @@ impl<'a> TestBuilder<'a> {
             "gcc" => vec![
                 "gcc".into(),
                 format!("{}/{}", self.test_path, self.inp_file),
-                "-O".into(),
+                "-o".into(),
                 format!("{}/{}", self.test_path, self.out_file),
             ],
             "clang" => vec![
@@ -106,7 +107,7 @@ impl<'a> TestBuilder<'a> {
 impl<'a> Default for TestBuilder<'a> {
     fn default() -> Self {
         Self {
-            tester_path: "v_test/tester.vscript",
+            tester_path: "v_test/lv_1/tester.vscript",
             instructions: Ok(None),
             inp_file: "test.c",
             out_file: "test",
@@ -116,10 +117,27 @@ impl<'a> Default for TestBuilder<'a> {
         }
     }
 }
+impl Tester {
+    pub fn run_test(&self,input:Vec<String>)->Result<Output,Box<dyn Error>>{
+    let mut args=self.compiler_opts.clone();
+    args.remove(0);
+    let res=Command::new("gcc").args(args).output()?;
+    let res=Command::new(self.run_opts.as_ref().unwrap()).stdin(Stdio::piped()).spawn();
+    match res{
+       Ok(child)=>{
+        let input=input.into_iter().reduce(|acc,val|{format!("{}\n{}",acc,val)}).unwrap();
+        child.stdin.as_ref().unwrap().write(input.as_bytes())?;
+        let out=child.wait_with_output()?;
+        Ok(out)
+       } 
+       Err(err)=>{Err(Box::new(err))},
+    }
+    }
+}
 
 #[cfg(test)]
 mod test {
-    use crate::test_runner::tester::{TestBuilder};
+    use crate::test_runner::tester::{TestBuilder,Tester};
     use std::error::Error;
     //run_opts check with test_path : )
     #[test]
@@ -144,9 +162,23 @@ mod test {
         let opts: Vec<String> = vec![
             "gcc".into(),
             "src/v_test/vazha.c".into(),
-            "-O".into(),
+            "-o".into(),
             "src/v_test/vazha".into(),
         ];
         assert!(tester.compiler_opts == opts)
+    }
+    #[test]
+    fn test_file(){
+            let tester = TestBuilder::default()
+            .test_path("v_test/lv_1")
+            .input("test.c")
+            .output("test")
+            .parse_file().unwrap()
+            .opts().unwrap()
+            .build().unwrap();    
+        let input=&tester.instructions.tests.test.get(0).unwrap().input;
+        if let Err(err)=tester.run_test(input.to_vec()){
+            panic!("Error {} ",err);
+        };
     }
 }
