@@ -1,6 +1,6 @@
 use crate::vscript_dsl::{ast, vscript, dsl_errors::{ParseError, InstructionError}};
 use std::{fs::File, io::Read,error::Error};
-use std::process::{Command,Stdio};
+use std::process::{Command,Stdio,Output};
 use std::io::Write;
 pub struct TestBuilder<'a> {
     tester_path: &'a str,
