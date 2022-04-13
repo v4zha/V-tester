@@ -25,7 +25,7 @@ use std::vec::Vec;
 pub struct Instruction {
     info: Box<Info>,
     pub program: Box<Program>,
-    tests: Box<Tests>,
+    pub tests: Box<Tests>,
 }
 #[derive(Debug)]
 pub struct Info {
@@ -39,7 +39,7 @@ pub struct Program {
 }
 #[derive(Debug)]
 pub struct Tests {
-    test: Vec<Test>,
+    pub test: Vec<Test>,
 }
 
 impl Info {
@@ -83,9 +83,9 @@ impl Instruction {
 
 #[derive(Debug)]
 pub struct Test {
-    t_name: String,
-    input: Vec<String>,
-    output: Vec<String>,
+    pub t_name: String,
+    pub input: Vec<String>,
+    pub output: Vec<String>,
 }
 impl Test {
     pub fn new(t_name: String, input: Vec<String>, output: Vec<String>) -> Self {
@@ -171,7 +171,7 @@ mod test {
     #[test]
     //check valid parse file
     fn valid_check() {
-        let path = "v_test/tester.vscript";
+        let path = "v_test/lv_1/tester.vscript";
         let res = parse(path);
         if let Err(err) = res {
             panic!("Erro : {:?}", err);
