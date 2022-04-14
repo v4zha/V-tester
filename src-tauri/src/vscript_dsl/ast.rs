@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::vscript_dsl::dsl_errors::{InstructionError, ParseError};
 use std::vec::Vec;
 /*
@@ -37,7 +39,7 @@ pub struct Program {
     language: PrgLang,
     pub run_env: RunEnv,
 }
-#[derive(Debug)]
+#[derive(Debug,Serialize)]
 pub struct Tests {
     pub test: Vec<Test>,
 }
@@ -81,7 +83,7 @@ impl Instruction {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug,Serialize)]
 pub struct Test {
     pub t_name: String,
     pub input: Vec<String>,
