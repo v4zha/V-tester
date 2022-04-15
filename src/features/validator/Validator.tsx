@@ -19,10 +19,10 @@ function Validator(props: TestProp) {
                 <h1 style={{ color: "#5e81ac" }}>V Tester</h1>
             </div>
             <div className="test_name">
-                <h3>Validating Test [ {valid_test.t_name} ] </h3>
+                <h3>Validating Test : {valid_test.t_name}  </h3>
             </div>
             <div className="t_result">
-                <h4>Test Result : [ {JSON.stringify(test_res)} ] </h4>
+                <h4>Test Result :  {test_res?"Passed":"Failed"}  </h4>
             </div>
             <div>
                 <Link to="/test" style={{ textDecoration: 'none' }}>

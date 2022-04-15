@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api";
 import { Vtest } from "../../common/Types";
 import { Link } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Button, Box } from "@mui/material";
 
 function VTest(props: any) {
     const init_val: Vtest = { info: { name: "No info", desc: "No info" }, tests: { test: [{ t_name: "no test", input: [""], output: [""] }] } };
@@ -27,26 +27,26 @@ function VTest(props: any) {
             <div>
                 <h1 style={{ color: "#5e81ac" }}>V Tester</h1>
             </div>
-        <div style={{ display:"flex",flexDirection:"column", gap:"20px"}}>
-            <h3>Tests</h3>
-            {test_info()}
-            <div>
-            {vtests.tests.test.map(t => {
-                return (<div className="test_div">
-                    <Link to="/validate" style={{ textDecoration: 'none' }}>
-                        <button className="t_button" onClick={() => setValidtest(t)}>
-                            <span>{t.t_name}</span>
-                        </button>
+            <Box sx={{ display: 'flex',flexDirection: 'column',gap:'20px' }}>
+                    <h3>Tests</h3>
+                    {test_info()}
+                    <Box>
+                        {vtests.tests.test.map(t => {
+                            return (<Box className="test_div">
+                                <Link to="/validate" style={{ textDecoration: 'none' }}>
+                                    <Button className="t_button" onClick={() => setValidtest(t)} variant='contained' size="medium" sx={[{ background: '#d08770', color: '#2e3440' }, { '&:hover': { background: '#3b4252',color:'#d8dee9' } }]}>
+                                        <span>{t.t_name}</span>
+                                    </Button>
+                                </Link>
+                            </Box>);
+                        })}
+                    </Box>
+                    <Link to="/" style={{ textDecoration: 'none' }}>
+                        <Button className="test_button" variant='contained' size="large" sx={[{ background: '#5e81ac', color: '#d8dee9' }, { '&:hover': { background: '#3b4252' } }]}>
+                            Home
+                        </Button>
                     </Link>
-                </div>);
-            })}
-            </div>
-            <Link to="/" style={{ textDecoration: 'none' }}>
-                <Button className="test_button" variant='contained' size="large" sx={[{ background: '#5e81ac', color: '#d8dee9' }, { '&:hover': { background: '#3b4252' } }]}>
-                    Home
-                </Button>
-            </Link>
-        </div>
+            </Box>
         </>
     )
 }
