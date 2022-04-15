@@ -12,7 +12,7 @@ tests {
         output[Yes]
     },
     (vtest_2){
-        input[1,2,3]
-        output[No.Was not found]
+        input[3,4,2,7,3]
+        output[Yes]
     }
 }

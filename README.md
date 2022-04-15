@@ -6,8 +6,13 @@ Tests are written in VazhaScript DSL.
 <br><br>
 
 ![v4zha](assets/vtester.png)
+![v4zha](assets/gui_demo/1.png)
+![v4zha](assets/gui_demo/2.png)
+![v4zha](assets/gui_demo/3.png)
+![v4zha](assets/gui_demo/4.png)
 
 <br><br>
+
 
 ## Current Features
 - Tauri GUI with React Ts frontend

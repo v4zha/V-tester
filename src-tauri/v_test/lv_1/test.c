@@ -1,7 +1,7 @@
 #include <stdio.h>
 // Linear search
 // unsafe C code
-// for demo perpose : )
+// for demo purpose : )
 int main(int argc, char** argv) {
   int n, ele;
   // printf("Enter the size of array\n");
@@ -19,6 +19,6 @@ int main(int argc, char** argv) {
       return 0;
     }
   }
-  printf("NO");
+  printf("No");
   return -1;
 }
