@@ -15,7 +15,7 @@ Tests are written in VazhaScript DSL.
 
 
 ## Current Features
-- Tauri GUI with React Ts frontend
+- [Tauri GUI](https://tauri.studio/) with React-ts frontend
 - Run and evaluate unit Tests
 - Write tests in VazhaScript DLS , provide test info, compiler info (currently supported : GCC ,Clang),add tests.
 - Run test locally and evaluate result.
