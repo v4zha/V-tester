@@ -23,23 +23,20 @@ use std::vec::Vec;
         }
     }
 */
-#[derive(Debug)]
 pub struct Instruction {
     info: Box<Info>,
     pub program: Box<Program>,
     pub tests: Box<Tests>,
 }
-#[derive(Debug)]
 pub struct Info {
     name: String,
     desc: String,
 }
-#[derive(Debug)]
 pub struct Program {
     language: PrgLang,
     pub run_env: RunEnv,
 }
-#[derive(Debug,Serialize)]
+#[derive(Serialize)]
 pub struct Tests {
     pub test: Vec<Test>,
 }
@@ -83,7 +80,7 @@ impl Instruction {
     }
 }
 
-#[derive(Debug,Serialize)]
+#[derive(Serialize)]
 pub struct Test {
     pub t_name: String,
     pub input: Vec<String>,
@@ -105,22 +102,21 @@ impl Tests {
         Self { test: res }
     }
 }
-#[derive(Debug)]
 enum PrgLang {
     C,
     Python,
 }
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[derive( Copy, Clone, PartialEq, PartialOrd)]
 pub enum Compiler {
     Gcc,
     Clang,
 }
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[derive(Copy, Clone, PartialEq, PartialOrd)]
 pub enum Interpreter {
     Python,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[derive(Copy, Clone, PartialEq, PartialOrd)]
 pub enum RunEnv {
     Compiler(Compiler),
     Interpreter(Interpreter),
@@ -153,7 +149,6 @@ impl Into<String> for &RunEnv {
 mod test {
     use crate::vscript_dsl::{dsl_errors::ParseError, vscript};
     use std::{fs::File, io::Read,error::Error};
-    use super::Instruction;
     //file parse fn
     fn parse(path:&str)->Result<(), Box<dyn Error>>{
             let mut input = String::new();
@@ -162,7 +157,7 @@ mod test {
         let res = vscript::InstructionsParser::new().parse(&input);
         match res{
             Ok(res)=>{
-                let res=res?;
+                let _res=res?;
                 Ok(())
             }
             Err(_)=>{

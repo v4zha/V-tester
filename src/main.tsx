@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import VRoutes from  './Routes';
+import VRoutes from  './app/Routes';
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

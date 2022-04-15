@@ -11,7 +11,6 @@ pub struct TestBuilder<'a> {
     compiler_opts: Vec<String>,
     run_opts: Option<String>,
 }
-#[derive(Debug)]
 pub struct Tester {
     pub instructions: Box<ast::Instruction>,
     compiler_opts: Vec<String>,
@@ -89,7 +88,7 @@ impl<'a> TestBuilder<'a> {
                 self.run_opts = self.run_opts(run_env);
                 Ok(self)
             }
-            Err(err)=>{
+            Err(_err)=>{
                 Err(Box::new(InstructionError::RunEnvError))
             }
         }
@@ -118,14 +117,15 @@ impl<'a> Default for TestBuilder<'a> {
     }
 }
 impl Tester {
-    pub fn run_test(&self,input:Vec<String>)->Result<Output,Box<dyn Error>>{
+    pub fn run_test(&self,input:&Vec<String>)->Result<Output,Box<dyn Error>>{
     let mut args=self.compiler_opts.clone();
     args.remove(0);
-    let res=Command::new("gcc").args(args).output()?;
-    let res=Command::new(self.run_opts.as_ref().unwrap()).stdin(Stdio::piped()).spawn();
+    let _res=Command::new("gcc").args(args).output()?;
+    let res=Command::new(self.run_opts.as_ref().unwrap()).stdin(Stdio::piped()).stdout(Stdio::piped()).spawn();
     match res{
        Ok(child)=>{
-        let input=input.into_iter().reduce(|acc,val|{format!("{}\n{}",acc,val)}).unwrap();
+        let input=input.clone().into_iter().reduce(|acc,val|{format!("{}\n{}",acc,val)}).unwrap();
+        // let mut stdin=child.stdin.take().unwrap();
         child.stdin.as_ref().unwrap().write(input.as_bytes())?;
         let out=child.wait_with_output()?;
         Ok(out)
@@ -133,11 +133,16 @@ impl Tester {
        Err(err)=>{Err(Box::new(err))},
     }
     }
+    pub fn validate_test(output:Output,t_out:Vec<String>)->Result<bool,Box<dyn Error>>{
+        let t_out=t_out.into_iter().reduce(|acc,val|{format!("{}\r\n{}",acc,val)}).unwrap().as_bytes().to_owned();
+        Ok(output.stdout==t_out)
+        
+    }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::test_runner::tester::{TestBuilder,Tester};
+    use crate::test_runner::tester::{TestBuilder};
     use std::error::Error;
     //run_opts check with test_path : )
     #[test]
@@ -177,7 +182,7 @@ mod test {
             .opts().unwrap()
             .build().unwrap();    
         let input=&tester.instructions.tests.test.get(0).unwrap().input;
-        if let Err(err)=tester.run_test(input.to_vec()){
+        if let Err(err)=tester.run_test(&input.to_vec()){
             panic!("Error {} ",err);
         };
     }
