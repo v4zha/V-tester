@@ -1,31 +1,52 @@
 import "./Test.css";
-import { useState, useEffect, Key} from "react";
+import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api";
-import { Tests } from "../../common/Types";
+import { Vtest } from "../../common/Types";
 import { Link } from "react-router-dom";
+import { Button } from "@mui/material";
 
-function VTest(props:any) {
-    const [tests, SetTests] = useState({ test: [{ t_name: "no test", input: [""], output: [""] }] } as Tests);
-    const {vtest,setVtest}=props.value;
+function VTest(props: any) {
+    const init_val: Vtest = { info: { name: "No info", desc: "No info" }, tests: { test: [{ t_name: "no test", input: [""], output: [""] }] } };
+    const [vtests, SetTests] = useState(init_val);
+    const { valid_test, setValidtest } = props.value;
     useEffect(() => {
         invoke('tests')
-            .then(t => SetTests(t as Tests))
+            .then(t => SetTests(t as Vtest))
             .catch(err => console.log(err));
     }, []);
+    function test_info() {
+        return (
+            <div>
+                Test Name : {vtests.info.name}<br />
+                Test Description : {vtests.info.desc}<br />
+            </div>
+        )
+    }
     return (
         <>
-            <h1>Tests</h1>
-            <ul>
-                {tests.test.map(t => {
-                    return (<div>
-                        <Link to="/validate">
-                            <button onClick={() => setVtest(t)}>
-                                <li key={t.t_name as Key}>{t.t_name}</li>
-                            </button>
-                        </Link>
-                    </div>);
-                })}
-            </ul>
+            <div>
+                <h1 style={{ color: "#5e81ac" }}>V Tester</h1>
+            </div>
+        <div style={{ display:"flex",flexDirection:"column", gap:"20px"}}>
+            <h3>Tests</h3>
+            {test_info()}
+            <div>
+            {vtests.tests.test.map(t => {
+                return (<div className="test_div">
+                    <Link to="/validate" style={{ textDecoration: 'none' }}>
+                        <button className="t_button" onClick={() => setValidtest(t)}>
+                            <span>{t.t_name}</span>
+                        </button>
+                    </Link>
+                </div>);
+            })}
+            </div>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+                <Button className="test_button" variant='contained' size="large" sx={[{ background: '#5e81ac', color: '#d8dee9' }, { '&:hover': { background: '#3b4252' } }]}>
+                    Home
+                </Button>
+            </Link>
+        </div>
         </>
     )
 }

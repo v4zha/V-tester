@@ -4,7 +4,8 @@
 )]
 mod vscript_dsl;
 mod test_runner;
-use vscript_dsl::ast::{Tests,Test};
+use serde::Serialize;
+use vscript_dsl::ast::{Tests,Test, Info};
 use test_runner::tester::{TestBuilder,Tester};
 #[macro_use]
 extern crate lazy_static;
@@ -27,10 +28,17 @@ fn build()->Tester{
             .opts().unwrap()
             .build().unwrap()
 }
-#[tauri::command]
-fn tests<'a>()->&'a Tests{
-    &*VTESTER.instructions.tests
+#[derive(Serialize)]
+struct Vtest<'a>{
+  tests:&'a Tests,
+  info:&'a Info,
 }
+#[tauri::command]
+fn tests<'a>()->Vtest<'a>{
+   Vtest {tests:&*VTESTER.instructions.tests,
+          info:&*VTESTER.instructions.info}
+}
+
 #[tauri::command]
 fn validate(t_name:String)->Result<bool,String>{
   let test:Vec<&Test> =VTESTER.instructions.tests.test.iter().filter(|t|t.t_name==t_name).collect();

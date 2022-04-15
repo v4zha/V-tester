@@ -24,10 +24,11 @@ use std::vec::Vec;
     }
 */
 pub struct Instruction {
-    info: Box<Info>,
+    pub info: Box<Info>,
     pub program: Box<Program>,
     pub tests: Box<Tests>,
 }
+#[derive(Serialize)]
 pub struct Info {
     name: String,
     desc: String,

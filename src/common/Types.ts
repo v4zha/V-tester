@@ -8,7 +8,15 @@ export interface Tests{
 }
 export type TestProp={
     value:{
-        vtest:Test,
-        setVtest:React.Dispatch<React.SetStateAction<Test>>,
+        valid_test:Test,
+        setValidtest:React.Dispatch<React.SetStateAction<Test>>,
     }
+}
+export interface Info{
+    name:String,
+    desc:String,
+}
+export interface Vtest{
+    info:Info,
+    tests:Tests,
 }

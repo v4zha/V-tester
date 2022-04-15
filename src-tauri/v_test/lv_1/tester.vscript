@@ -7,11 +7,11 @@ program {
     run_env = gcc;
 }
 tests {
-    (element_found){
+    (vtest_1){
         input[5,1,2,3,4,5,2]
         output[Yes]
     },
-    (element_not_found){
+    (vtest_2){
         input[1,2,3]
         output[No.Was not found]
     }
