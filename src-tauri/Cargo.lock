@@ -3851,7 +3851,7 @@ dependencies = [
 
 [[package]]
 name = "windows-bindgen"
-version = "0.30.0"
+version = "0.32.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "944c545fcae9dd66488308f8b69aa3ba34f53714416ecfcdcbbfa4b6821e27c6"
 dependencies = [
